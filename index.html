@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Mega Experience</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #121212;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 15px 0;
+      font-size: 28px;
+      color: #ffcc00;
+      text-shadow: 0 0 8px #ff8800;
+    }
+
+    /* 🔲 Nowy główny układ */
+#container {
+  display: grid;
+  grid-template-columns: 250px 220px 1fr 300px;
+  gap: 20px;
+  width: 95%;
+  max-width: 1600px;
+}
+
+#boardWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* wyśrodkowanie poziome */
+  justify-content: center; /* wyśrodkowanie pionowe */
+  width: 100%;
+  height: 100%;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(10, 50px);
+  grid-template-rows: repeat(10, 50px);
+  gap: 4px;
+  background: #1e1e1e;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+  margin-bottom: 15px;
+}
+
+.cell {
+      width: 50px;
+      height: 50px;
+      background: #2a2a2a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+.player {
+  background: #4caf50 !important;
+  z-index: 10;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.overlay.visible {
+  display: flex;
+}
+
+.overlay-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 80%;
+  text-align: center;
+}
+.player::after {
+  content: "🙂";
+  font-size: 20px;
+  z-index: 11;
+}
+
+    .skeleton::after { content: "💀"; }
+    .pig::after { content: "🐖"; }
+   	.sheep::after { content: "🐑"; }
+    .cow::after { content: "🐄"; }
+    .wolf::after { content: "🐺"; }
+    .spider::after { content: "🕷️"; }
+    .tree::after { content: "🌳"; }
+    .stick::after { content: "🌿"; }
+    .stone::after { content: "🪨"; }
+    .coal::after { content: "🌑"; }
+    .carrot::after { content: "🥕"; }
+    .tomato::after { content: "🍅"; }
+    .sand::after { content: "🟡"; }
+    .bamboo::after { content: "🎋"; }
+    .cactus::after { content: "🌵"; }
+    .campfire::after { content: "🔥"; }
+    .pumpkin::after { content: "🎃"; } 
+
+#controls {
+  display: grid; /* 👈 brakowało średnika */
+  grid-template-columns: repeat(3, 70px);
+  grid-template-rows: repeat(3, 70px);
+}
+#merchantOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+#merchantOverlay.visible {
+  display: flex;
+}
+
+#merchantOverlay .panel {
+  background: #222;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  max-width: 400px;
+}
+#merchantOverlay button {
+  margin: 5px;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #4caf50;
+  color: #fff;
+  cursor: pointer;
+}
+#merchantOverlay button:hover {
+  background: #66bb6a;
+}
+#updatePanel {
+  background: #1e1e1e;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.6);
+  font-size: 14px;
+  text-align: left;
+  width: 220px;
+  margin-left: 20px;
+}
+
+#updatePanel h3 {
+  margin-top: 0;
+  color: #ffcc00;
+  text-shadow: 0 0 6px #ff8800;
+}
+
+#updatePanel ul {
+  padding-left: 18px;
+  margin: 0;
+}
+
+#updatePanel li {
+  list-style: "🔹 ";
+  margin: 4px 0;
+}
+
+#achievementsButton {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #444;
+  color: #fff;
+  cursor: pointer;
+  z-index: 1000;
+}
+#achievementsButton:hover {
+  background: #666;
+}
+
+#achievementsOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  color: #fff;
+  overflow-y: auto;
+}
+#achievementsOverlay.visible {
+  display: flex;
+}
+
+#achievementsPanel {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  text-align: left;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+}
+#achievementsPanel h2 {
+  text-align: center;
+  margin-top: 0;
+}
+.achievement {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #2a2a2a;
+}
+.achievement h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #ffcc00;
+}
+.achievement p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #ccc;
+}
+.spider {
+  background-color: black;
+  color: red;
+}
+.btn-reset {
+  background: #c62828;
+  color: #fff;
+  font-size: 16px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: 0.2s;
+}
+.message-bar {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #fff;
+  background: #1e1e1e;
+  padding: 5px 10px;
+  border-radius: 8px;
+  min-height: 24px;
+}
+.btn-reset:hover {
+  background: #e53935;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+}
+
+.btn-campfire {
+  background: #ff8800;
+  color: #fff;
+  font-size: 16px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-campfire:hover {
+  background: #ffaa33;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+}
+
+@keyframes fire-jump {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.1); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes fire-flicker {
+  0% { box-shadow: 0 0 10px #ff6600; }
+  50% { box-shadow: 0 0 18px #ff9900; }
+  100% { box-shadow: 0 0 10px #ff6600; }
+}
+
+    .btn {
+      font-size: 28px;
+      border: none;
+      border-radius: 12px;
+      background: #333;
+      color: #fff;
+      transition: 0.2s;
+    }
+    .btn:hover { background: #555; transform: scale(1.05); }
+
+    /* 📦 Inventory po lewej */
+    #inventory {
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      font-size: 14px;
+      text-align: left;
+    }
+
+    #inventory h3 { margin-top: 0; }
+    #inventory ul { padding-left: 18px; margin: 0; }
+    #inventory li { list-style: "🔹 "; margin: 3px 0; }
+
+    .durability-bar {
+      height: 8px;
+      background: #444;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 2px 0 6px;
+    }
+    .durability { height: 100%; background: #4caf50; }
+
+    /* 📋 Panel boczny */
+    #sidebar {
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    #timeLabel {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    #mapSelector button,
+    #actions button,
+    #crafting button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #mapSelector button { background: #444; color: #fff; }
+    #mapSelector button:hover { background: #666; }
+
+    #actions button { background: #4caf50; color: #fff; }
+    #actions button:hover { background: #66bb6a; }
+
+    #crafting button { background: #888; color: #fff; }
+    #crafting button:hover { background: #aaa; }
+  </style>
+</head>
+<body>
+
+<h1>Mega Experience v1.04</h1>
+<div id="container">
+
+<div id="inventory"></div>
+
+<div id="updatePanel">
+  <h3>📝 Aktualizacja</h3>
+  <ul>
+    <li>Dodano Zupy</li>
+    <li>Dodano Dynie</li>
+    <li>Dodano Epeta</li>
+    <li>Dodano Dżungle</li>
+    <li>Dodano Bambus</li>
+    <li>Ulepszono Ognisko</li>
+    <li>Naprawiono Błędy</li>
+  </ul>
+</div>
+
+	
+<div id="merchantOverlay">
+  <div class="panel" id="merchantUI"></div>
+</div>
+
+<div id="boardWrapper">
+  <div id="gameMessage" class="message-bar"></div>
+  <div id="board"></div>
+  <div id="controls">
+    <div></div><button class="btn" onclick="move('up')">W</button><div></div>
+    <button class="btn" onclick="move('left')">A</button><div></div>
+    <button class="btn" onclick="move('right')">D</button><div></div>
+    <button class="btn" onclick="move('down')">S</button><div></div>
+  </div>
+</div>
+
+    <!-- 📋 Panel boczny -->
+    <div id="sidebar">
+      <div id="sidebar">
+  <div id="timeLabel">🌞 Dzień</div>
+  <div id="dayCounter">📅 Dzień: 1</div>
+  <div id="weatherLabel">☀️ Pogoda: Słonecznie</div>
+  <button onclick="resetGame()" style="background:#c62828;color:#fff;">🔄 Zresetuj grę</button>
+        <button onclick="useEpet()">🤖 Użyj Epeta</button>
+        <button class="btn-campfire" onclick="placeCampfire()">🔥 Postaw ognisko</button>
+        <button class="btn-campfire" onclick="collectNearbyCampfire()">🔥 Weź ognisko z mapy</button>
+
+      <div id="mapSelector">
+        <button onclick="setBiome('forest')">🌲 Las</button>
+        <button onclick="setBiome('jungle')">🌴 Dżungla</button>
+        <button onclick="setBiome('desert')">🏜️ Pustynia</button>
+        <button onclick="setBiome('cave')">⛰ Jaskinia</button>
+      </div>
+      
+<button onclick="shootBow('up')">⬆️ Strzel w górę</button>
+<button onclick="shootBow('down')">⬇️ Strzel w dół</button>
+<button onclick="shootBow('left')">⬅️ Strzel w lewo</button>
+<button onclick="shootBow('right')">➡️ Strzel w prawo</button>
+
+      <div id="actions">
+        <button onclick="eatApple()">🍎 Zjedz jabłko (+2 HP)</button>
+        <button onclick="eatTomato()">🍅 Zjedz pomidora (+0.5 HP)</button>
+        <button onclick="eatCookedMeat()">🍖 Zjedz mięso (+5 HP)</button>
+        <button onclick="eatCarrot()">🥕 Zjedz marchewkę (+1 HP)</button>
+        <button onclick="eatPumpkinSoup()">🍲 Zjedz Zupę Dyniową (+ 3 HP)</button>
+        <button onclick="eatTomatoSoup()">🍲 Zjedz Zupę Pomidorową (+ 2 HP)</button>
+      </div>
+
+      <div id="crafting">
+        <button onclick="craftAxe()"> Siekiera (3 patyki + 2 kamienia)</button>
+        <button onclick="craftPickaxe()"> Kilof (7 patyków)</button>
+        <button onclick="craftEpet()"> Epet (10 węgla + 5 kamiennego pyłu + 1 bambus)</button>
+        <button onclick="craftStonePickaxe()">Kamienny kilof (3x kamień, 4x patyk)</button>
+        <button onclick="craftSword()"> Miecz (3 patyki + 10 kamienia)</button>
+        <button onclick="craftBow()"> Łuk (1 nić, 2 patyki)</button>
+        <button onclick="craftArrow()"> Strzały (1 patyk + 1 kamień)</button>
+        <button onclick="craftDagger()"> Sztylet (2 patyki + 7 kamienia)</button>
+        <button onclick="craftArmor()"> Zbroja wilka (12 skóry wilka)</button>
+        <button onclick="craftThread()"> Nić (3x pajęczyna)</button>
+        <button onclick="craftBowl()"> Drewniana miska (1 Drewno)</button>
+        <button onclick="craftSwissKnife()"> Scyzoryk szwajcarski (5 patyków + 8 kamienia)</button>
+        <button onclick="craftChair()"> Krzesło (2 drewna + 6 patyków)</button>
+        <button onclick="craftCampfire()"> Ognisko (8 drewna + 4 węgla)</button>
+      </div>
+    </div>
+  </div>
+  <div id="ui"></div>
+  
+<button id="achievementsButton" onclick="openAchievements()">🏆 Osiągnięcia</button>
+
+<div id="achievementsOverlay">
+  <div id="achievementsPanel">
+    <h2>🏆 Osiągnięcia</h2>
+    <div id="achievementsList"></div>
+    <button onclick="closeAchievements()" style="margin-top:15px;padding:8px 12px;border:none;border-radius:8px;background:#c62828;color:#fff;">Zamknij</button>
+  </div>
+</div>
+
+<div id="cookingOverlay" class="overlay">
+  <div class="overlay-content">
+    <h2>🔥 Gotowanie</h2>
+    <button onclick="cookMeat()">🍖 Upiecz mięso</button>
+    <button onclick="cookTomatoSoup()">🍲 Ugotuj zupę pomidorową (4x pomidor)</button>
+    <button onclick="cookPumpkinSoup()">🍲 Ugotuj zupę dyniową (2x dynia)</button>
+    <button onclick="closeCooking()">❌ Zamknij</button>
+  </div>
+</div>
+
+<script>
+const size = 10;
+const board = document.getElementById('board');
+let playerX = 0, playerY = 0, isDay = true;
+let worldX = 0, worldY = 0;
+let currentBiome = 'forest';
+let playerHP = 20;
+let merchant = null;
+let worlds = {};
+let day = 1;
+let weather = "☀️ Słonecznie"; 
+const weathers = ["☀️ Słonecznie", "🌧️ Deszcz", "⛈️ Burza"];
+
+let inventory = {
+  wood: 0,
+  cookedMeat: 0,
+  apples: 0,
+  arrows: 0,
+  bamboo: 0,
+  cactus: 0,
+  stones: 0,
+  bones: 0,
+  chairs: 0,
+  cactusFlower: 0,
+  carrots: 0,
+  meat: 0,
+  campfires: 0,
+  spiderSilk: 0,
+  bowl: 0,
+  sticks: 0,
+  sand: 0,
+  tomatoes: 0,
+  stoneDust: 0,
+  wolfSkin: 0,
+  wool: 0,
+  thread: 0, 
+  coal: 0,
+  tomatoSoup: 0,
+  pumpkinSoup: 0,
+  pumpkins: 0,
+  axe: false,
+  axeDurability: 0,
+  armor: false,
+  swissKnife: false,
+  swissKnifeDurability: 0,
+  sword: false,
+  swordDurability: 0,
+  pickaxe: false,
+  pickaxeDurability: 0,
+  dagger: false,
+  daggerDurability: 0,
+  epet: false,
+  bow: false,
+  bowDurability: 0,
+  stonePickaxe: false,
+  stonePickaxeDurability: 0
+};
+
+let achievements = [
+  { id: "firstBlood", title: "Pierwsza krew", desc: "Pokonaj pierwszego przeciwnika.", unlocked: false },
+  { id: "wolfHunter", title: "Łowca wilków", desc: "Zbierz 5 skór wilka.", unlocked: false },
+  { id: "armorCrafter", title: "Pancerny wojownik", desc: "Stwórz zbroję ze skóry wilka.", unlocked: false },
+  { id: "daySurvivor", title: "Przetrwały", desc: "Przeżyj 5 dni.", unlocked: false },
+  { id: "shepherd", title: "Pasterz", desc: "Zdobądź wełnę od owcy.", unlocked: false },
+  { id: "woodCollector", title: "Drwal", desc: "Zbierz 100 drewna.", unlocked: false },
+  { id: "bowKill", title: "Szkielet z dystansu", desc: "Pokonaj szkieleta łukiem.", unlocked: false }
+];
+
+let sticks = [];
+let stones = [];
+let trees = [];
+let campfires = [];
+let carrots = [];
+let pumpkins = [];
+let bamboo = [];
+let cows = [];
+let arrows = [];
+let spiders = [];
+let sand = [];
+let wolves = [];
+let tomatoes = [];
+let skeletons = [];
+let coal = [];
+let cacti = [];
+let sheep = [];
+let pigs = [];
+
+function getCellIndex(x, y) {
+  return y * size + x;
+}
+
+function setBiome(biome) {
+  currentBiome = biome;
+  generateMapForBiome();
+  renderBoard();
+}
+
+function openAchievements() {
+  renderAchievements();
+  document.getElementById('achievementsOverlay').classList.add('visible');
+}
+function closeAchievements() {
+  document.getElementById('achievementsOverlay').classList.remove('visible');
+}
+
+function renderAchievements() {
+  let list = "";
+  achievements.forEach(a => {
+    list += `
+      <div class="achievement" style="opacity:${a.unlocked ? 1 : 0.5}">
+        <h3>${a.title}</h3>
+        <p>${a.desc}</p>
+        <p>Status: ${a.unlocked ? "✅ Odblokowane" : "❌ Zablokowane"}</p>
+      </div>
+    `;
+  });
+  document.getElementById('achievementsList').innerHTML = list;
+}
+
+function unlockAchievement(id) {
+  const ach = achievements.find(a => a.id === id);
+  if (ach && !ach.unlocked) {
+    ach.unlocked = true;
+    alert(`🏆 Odblokowano osiągnięcie: ${ach.title}`);
+    saveGame();
+  }
+}
+
+function generateItems(arr, count) {
+  let tries = 0;
+  while (arr.length < count && tries < 1000) {
+    const x = Math.floor(Math.random() * size);
+    const y = Math.floor(Math.random() * size);
+    const occupied = [sticks, stones, trees, pigs].some(group =>
+      group.some(i => i.x === x && i.y === y)
+    );
+    if ((x !== playerX || y !== playerY) && !occupied) {
+      arr.push({x, y});
+    }
+    tries++;
+  }
+}
+
+function useEpet() {
+  if (!inventory.epet) {
+    showMessage("❌ Nie masz Epeta!");
+    return;
+  }
+
+  showMessage("🤖 Epet aktywowany! Zbiera wszystko wokół ciebie!");
+
+  // zakres 3x3 wokół gracza
+  for (let dx = -1; dx <= 1; dx++) {
+    for (let dy = -1; dy <= 1; dy++) {
+      if (dx === 0 && dy === 0) continue; // pomiń pole gracza
+
+      const targetX = playerX + dx;
+      const targetY = playerY + dy;
+
+      // sprawdź każdy rodzaj obiektu
+      sticks = collectNearby(sticks, targetX, targetY, "sticks", "🌿 Patyk");
+      stones = collectNearby(stones, targetX, targetY, "stones", "🪨 Kamień");
+      trees = collectNearby(trees, targetX, targetY, "wood", "🌳 Drewno");
+      tomatoes = collectNearby(tomatoes, targetX, targetY, "tomatoes", "🍅 Pomidor");
+      carrots = collectNearby(carrots, targetX, targetY, "carrots", "🥕 Marchewka");
+      pumpkins = collectNearby(pumpkins, targetX, targetY, "pumpkins", "🎃 Dynia");
+      coal = collectNearby(coal, targetX, targetY, "coal", "🌑 Węgiel");
+      bamboo = collectNearby(bamboo, targetX, targetY, "bamboo", "🎋 Bambus");
+      sand = collectNearby(sand, targetX, targetY, "sand", "🟡 Piasek");
+      cactus = collectNearby(cactus, targetX, targetY, "cactus", "🌵 Kaktus");
+      sheep = collectNearby(sheep, targetX, targetY, "wool", "🐑 Wełna i mięso", true);
+      pigs = collectNearby(pigs, targetX, targetY, "meat", "🐖 Mięso", true);
+      cows = collectNearby(cows, targetX, targetY, "meat", "🐄 Mięso", true);
+      wolves = collectNearby(wolves, targetX, targetY, "wolfSkin", "🐺 Skóra wilka", true);
+    }
+  }
+
+  updateInventory();
+  renderBoard();
+  saveGame();
+}
+
+function collectNearby(array, x, y, itemKey, itemName, enemy = false) {
+  return array.filter(obj => {
+    if (obj.x === x && obj.y === y) {
+      if (enemy) {
+        showMessage(`${itemName} został pokonany przez Epeta!`);
+      } else {
+        inventory[itemKey] = (inventory[itemKey] || 0) + 1;
+        showMessage(`🤖 Epet zebrał ${itemName}!`);
+      }
+      return false; // usuń z mapy
+    }
+    return true;
+  });
+}
+
+function updateWeather() {
+  if (Math.random() < 0.3) { 
+    weather = weathers[Math.floor(Math.random() * weathers.length)];
+  }
+  document.getElementById('weatherLabel').textContent = `${weather}`;
+}
+
+function applyWeatherEffects() {
+  if (weather.includes("🌧️")) {
+    // deszcz – większa szansa na rośliny
+    generateItems(carrots, 2);
+    generateItems(tomatoes, 2);
+  }
+
+  if (weather.includes("⛈️")) {
+    // burza – gracz dostaje obrażenia jeśli nie stoi przy ognisku
+    const nearCampfire = campfires.some(fire => 
+      Math.abs(fire.x - playerX) <= 1 && Math.abs(fire.y - playerY) <= 1
+    );
+
+    if (!nearCampfire) {
+      playerHP -= 1;
+      if (playerHP <= 0) {
+        alert("⚡ Zginąłeś rażony piorunem w czasie burzy!");
+        resetGame();
+      }
+    }
+  }
+}
+
+function renderBoard() {
+  board.innerHTML = '';
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+
+      // Rysowanie innych obiektów
+      if (merchant && merchant.x === x && merchant.y === y) {
+        cell.classList.add('merchant');
+        cell.textContent = '👳';
+      } else {
+        const objMap = [
+          { arr: sticks, cls: 'stick' },
+          { arr: stones, cls: 'stone' },
+          { arr: skeletons, cls: 'skeleton' },
+          { arr: trees, cls: 'tree' },
+          { arr: campfires, cls: 'campfire' },
+          { arr: carrots, cls: 'carrot' },
+          { arr: cows, cls: 'cow' },
+          { arr: spiders, cls: 'spider' },
+          { arr: sand, cls: 'sand' },
+          { arr: bamboo, cls: 'bamboo' },
+          { arr: wolves, cls: 'wolf' },
+          { arr: tomatoes, cls: 'tomato' },
+          { arr: coal, cls: 'coal' },
+          { arr: cacti, cls: 'cactus' },
+          { arr: sheep, cls: 'sheep' },
+          { arr: pumpkins, cls: 'pumpkin' },
+          { arr: pigs, cls: 'pig' }
+        ];
+
+        for (const { arr, cls } of objMap) {
+          if (Array.isArray(arr) && arr.some(i => i.x === x && i.y === y)) {
+            cell.classList.add(cls);
+            break;
+          }
+        }
+      }
+      if (x === playerX && y === playerY) {
+        cell.textContent = "🙂";
+        cell.style.backgroundColor = "#4caf50";
+      }
+      board.appendChild(cell);
+    }
+  }
+
+  updateInventory();
+  updateTimeLabel();
+  saveGame();
+}
+
+function spawnMerchant() {
+  // losowe miejsce poza graczem
+  let x, y;
+  do {
+    x = Math.floor(Math.random() * size);
+    y = Math.floor(Math.random() * size);
+  } while (x === playerX && y === playerY);
+
+  merchant = { x, y };
+}
+function showMessage(text) {
+  const msgBox = document.getElementById("gameMessage");
+  msgBox.textContent = text;
+
+  setTimeout(() => {
+    if (msgBox.textContent === text) {
+      msgBox.textContent = "";
+    }
+  }, 7000);
+}
+function generateMapForBiome() {
+  sticks = [];
+  stones = [];
+  sheep = [];
+  trees = [];
+  carrots = [];
+  pigs = [];
+  cows = [];
+  tomatoes = [];
+  pumpkins = [];
+
+if (currentBiome === 'forest') {
+  generateItems(sticks, 10);
+  generateItems(stones, 4);
+  generateItems(trees, 4);
+  generateItems(cows, 2);
+  generateItems(pigs, 2);
+  generateItems(carrots, 3);
+  generateItems(tomatoes, 3);
+  generateItems(pumpkins, 3); 
+  generateItems(sheep, 2);
+}
+
+  if (currentBiome === 'jungle') {
+    generateItems(trees, 10); 
+    generateItems(bamboo, 5); 
+  }
+
+  if (currentBiome === 'desert') {
+    generateItems(sand, 10);
+    generateItems(cacti, 3);
+  }
+
+  if (currentBiome === 'cave') {
+    generateItems(stones, 8); 
+    generateItems(spiders, 3); 
+    generateItems(coal, 3);
+  }
+}
+
+function collectNearbyCampfire() {
+  for (let i = 0; i < campfires.length; i++) {
+    const fire = campfires[i];
+    const dx = Math.abs(fire.x - playerX);
+    const dy = Math.abs(fire.y - playerY);
+
+    // Gracz jest maksymalnie 1 kratkę od ogniska, ale nie na nim
+    if ((dx <= 1 && dy <= 1) && !(dx === 0 && dy === 0)) {
+      inventory.campfires = (inventory.campfires || 0) + 1;
+      campfires.splice(i, 1); // usuń ognisko z mapy
+      saveGame();
+      renderBoard();
+      updateInventory();
+      return;
+    }
+  }
+}
+
+function move(dir) {
+  if (dir === 'up') {
+    if (playerY === 0) {
+      worldY--;
+      playerY = size - 1;
+    } else {
+      playerY--;
+    }
+  } else if (dir === 'down') {
+    if (playerY === size - 1) {
+      worldY++;
+      playerY = 0;
+    } else {
+      playerY++;
+    }
+  } else if (dir === 'left') {
+    if (playerX === 0) {
+      worldX--;
+      playerX = size - 1;
+    } else {
+      playerX--;
+    }
+  } else if (dir === 'right') {
+    if (playerX === size - 1) {
+      worldX++;
+      playerX = 0;
+    } else {
+      playerX++;
+    }
+  }
+
+  interact();
+  moveSkeletons();
+  moveWolves();
+  renderBoard();
+}
+
+function isCellFree(x, y) {
+  // Zwraca true, jeśli kratka jest pusta (brak przeszkód)
+  if (x < 0 || x >= size || y < 0 || y >= size) return false;
+  const obstacles = [...trees, ...stones, ...cacti, ...campfires];
+  return !obstacles.some(obj => obj.x === x && obj.y === y);
+}
+
+function moveWolves() {
+  for (let wolf of wolves) {
+    let dx = playerX - wolf.x;
+    let dy = playerY - wolf.y;
+
+    let moved = false;
+
+    // Spróbuj ruch w osi X
+    if (Math.abs(dx) > Math.abs(dy)) {
+      const nx = wolf.x + Math.sign(dx);
+      if (isCellFree(nx, wolf.y)) {
+        wolf.x = nx;
+        moved = true;
+      }
+    }
+
+    // Jeśli nie przeszedł w X lub X było krótsze, spróbuj Y
+    if (!moved && dy !== 0) {
+      const ny = wolf.y + Math.sign(dy);
+      if (isCellFree(wolf.x, ny)) {
+        wolf.y = ny;
+        moved = true;
+      }
+    }
+
+    // Jeśli nie można w X ani Y, spróbuj ruch alternatywny (np. losowo)
+    if (!moved) {
+      const dirs = [
+        [1,0], [-1,0], [0,1], [0,-1]
+      ].sort(() => Math.random() - 0.5); // losowa kolejność
+      for (const [dxAlt, dyAlt] of dirs) {
+        if (isCellFree(wolf.x + dxAlt, wolf.y + dyAlt)) {
+          wolf.x += dxAlt;
+          wolf.y += dyAlt;
+          break;
+        }
+      }
+    }
+  }
+}
+
+function moveSkeletons() {
+  for (let skel of skeletons) {
+    let dx = playerX - skel.x;
+    let dy = playerY - skel.y;
+
+    let moved = false;
+
+    // Spróbuj ruch w osi X
+    if (Math.abs(dx) > Math.abs(dy)) {
+      const nx = skel.x + Math.sign(dx);
+      if (isCellFree(nx, skel.y)) {
+        skel.x = nx;
+        moved = true;
+      }
+    }
+
+    // Jeśli nie przeszedł w X lub X było krótsze, spróbuj Y
+    if (!moved && dy !== 0) {
+      const ny = skel.y + Math.sign(dy);
+      if (isCellFree(skel.x, ny)) {
+        skel.y = ny;
+        moved = true;
+      }
+    }
+
+    // Jeśli nie można w X ani Y, spróbuj ruch alternatywny (np. losowo)
+    if (!moved) {
+      const dirs = [
+        [1,0], [-1,0], [0,1], [0,-1]
+      ].sort(() => Math.random() - 0.5); // losowa kolejność
+      for (const [dxAlt, dyAlt] of dirs) {
+        if (isCellFree(skel.x + dxAlt, skel.y + dyAlt)) {
+          skel.x += dxAlt;
+          skel.y += dyAlt;
+          break;
+        }
+      }
+    }
+  }
+}
+
+function interact() {
+  sticks = sticks.filter(i => {
+    if (i.x === playerX && i.y === playerY) {
+      inventory.sticks++;
+      showMessage("🌿 Zebrałeś 1x patyk!");
+      return false;
+    }
+    return true;
+  });
+stones = stones.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    if (inventory.pickaxe) {
+      inventory.stones++;
+      inventory.pickaxeDurability--;
+      if (inventory.pickaxeDurability <= 0) {
+        inventory.pickaxe = false;
+        showMessage("⛏️ Twój kilof się zepsuł!");
+      }
+      return false;
+    } else if (inventory.swissKnife) {
+      inventory.stoneDust++;
+      inventory.swissKnifeDurability--;
+      if (inventory.swissKnifeDurability <= 0) {
+        inventory.swissKnife = false;
+        showMessage("🇨🇭 Twój scyzoryk się zużył!");
+      }
+      return false;
+    } else {
+      showMessage("❌ Potrzebujesz kilofa ⛏️ albo scyzoryka 🇨🇭, żeby coś zebrać!");
+    }
+  }
+  return true;
+});
+spiders = spiders.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    if (inventory.dagger) {
+      inventory.spiderSilk = (inventory.spiderSilk || 0) + 1;
+      showMessage("🕷️ Pokonałeś pająka i zdobyłeś pajęczynę!");
+      inventory.daggerDurability--;
+      if (inventory.daggerDurability <= 0) inventory.dagger = false;
+      return false;
+    } else {
+      let dmg = 2;
+      if (inventory.armor) {
+        dmg = Math.ceil(dmg * 0.8);
+        inventory.armorDurability--;
+        if (inventory.armorDurability <= 0) {
+          inventory.armor = false;
+          showMessage("🛡️ Twoja zbroja się zniszczyła!");
+        }
+      }
+      playerHP -= dmg;
+      if (playerHP <= 0) {
+        showMessage("💀 Pająk cię zabił!");
+        resetGame();
+        return false;
+      }
+    }
+  }
+  return true;
+});
+  sand = sand.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    inventory.sand = (inventory.sand || 0) + 1;
+    showMessage("Zebrałeś 1x Piasek!");
+    return false;
+  }
+  return true;
+});
+carrots = carrots.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    inventory.carrots = (inventory.carrots || 0) + 1;
+    showMessage("Zebrałeś 1x Marchewkę!");
+    return false; 
+  }
+  return true;
+});
+tomatoes = tomatoes.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    inventory.tomatoes = (inventory.tomatoes || 0) + 1;
+    showMessage("🍅 Zebrałeś 1x pomidora!");
+    return false; 
+  }
+  return true;
+});
+pumpkins = pumpkins.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    inventory.pumpkins = (inventory.pumpkins || 0) + 1;
+    showMessage("🎃 Zebrałeś 1x dynię!");
+    return false; 
+  }
+  return true;
+});
+sheep = sheep.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    if (inventory.dagger || inventory.sword) {
+      inventory.meat = (inventory.meat || 0) + 1;
+      inventory.wool = (inventory.wool || 0) + 1;
+
+      let dmg = 2; // przykładowe obrażenia
+      if (inventory.armor) {
+        dmg = Math.ceil(dmg * 0.8);
+        inventory.armorDurability--;
+        if (inventory.armorDurability <= 0) {
+          inventory.armor = false;
+          showMessage("🛡️ Twoja zbroja się zniszczyła!");
+        }
+      }
+      playerHP -= dmg;
+
+      showMessage("🐑 Zebrałeś 1x mięso i 1x wełnę!");
+      return false;
+    } else {
+      playerHP--;
+      if (playerHP <= 0) {
+        alert("💀 Zginąłeś od owcy!");
+        resetGame();
+      }
+    }
+  }
+  return true;
+});
+coal = coal.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    if (inventory.stonePickaxe) {
+      inventory.coal = (inventory.coal || 0) + 1;
+      inventory.stonePickaxeDurability--;
+      if (inventory.stonePickaxeDurability <= 0) {
+        inventory.stonePickaxe = false;
+        showMessage("⛏️ Twój kamienny kilof się zepsuł!");
+      }
+      return false;
+    } else {
+      showMessage("❌ Potrzebujesz kamiennego kilofa, żeby wykopać węgiel!");
+    }
+  }
+  return true;
+});
+campfires.forEach(fire => {
+  if (fire.x === playerX && fire.y === playerY) {
+    openCooking(); 
+  }
+});
+if (merchant && playerX === merchant.x && playerY === merchant.y) {
+  openMerchantTrade();
+}
+bamboo = bamboo.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    inventory.bamboo = (inventory.bamboo || 0) + 1;
+    showMessage("🎋 Zebrałeś 1x bambus!");
+    return false; // usuń z mapy po zebraniu
+  }
+  return true;
+});
+wolves = wolves.filter(wolf => {
+  if (wolf.x === playerX && wolf.y === playerY) {
+    if (inventory.sword) {
+      inventory.swordDurability--;
+      if (inventory.swordDurability <= 0) {
+        inventory.sword = false;
+        showMessage("🗡️ Twój miecz się zepsuł!");
+      }
+      inventory.wolfSkin = (inventory.wolfSkin || 0) + 1;
+      unlockAchievement("firstBlood");
+      showMessage("🐺 Zebrałeś 1x skórę wilka!");
+      if (inventory.wolfSkin >= 5) unlockAchievement("wolfHunter");
+      return false;
+    } else {
+      // wilk gryzie gracza
+      let dmg = 3;
+      if (inventory.armor) {
+        dmg = Math.ceil(dmg * 0.8);
+        inventory.armorDurability--;
+        if (inventory.armorDurability <= 0) {
+          inventory.armor = false;
+          showMessage("🛡️ Twoja zbroja się zniszczyła!");
+        }
+      }
+      playerHP -= dmg;
+      if (playerHP <= 0) {
+        showMessage("💀 Zginąłeś rozszarpany przez wilki!");
+        resetGame();
+        return false;
+      }
+    }
+  }
+  return true;
+});
+skeletons = skeletons.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    if (inventory.sword) {
+      inventory.bones = (inventory.bones || 0) + 1;
+
+      // 🏆 osiągnięcie tylko za szkieleta
+      unlockAchievement("firstBlood");
+
+      inventory.swordDurability--;
+      if (inventory.swordDurability <= 0) {
+        inventory.sword = false;
+        showMessage("🗡️ Twój miecz się zepsuł!");
+      }
+
+      return false; // szkielet pokonany
+    } else {
+      // obrażenia od szkieleta
+      let dmg = 2;
+      if (inventory.armor) {
+        dmg = Math.ceil(dmg * 0.8); // redukcja 20%
+        inventory.armorDurability--;
+        if (inventory.armorDurability <= 0) {
+          inventory.armor = false;
+          showMessage("🛡️ Twoja zbroja się zniszczyła!");
+        }
+      }
+      playerHP -= dmg;
+
+      if (playerHP <= 0) {
+        showMessage("💀 Zginąłeś od szkieleta! Gra została zresetowana.");
+        resetGame();
+        return false;
+      }
+    }
+  }
+  return true;
+});
+cacti = cacti.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    let dmg = 1;
+    if (inventory.armor) {
+      dmg = Math.ceil(dmg * 0.8); // redukcja 20%
+      inventory.armorDurability--;
+      if (inventory.armorDurability <= 0) {
+        inventory.armor = false;
+        showMessage("🛡️ Twoja zbroja się zniszczyła!");
+      }
+    }
+    playerHP -= dmg;
+
+    inventory.cactus = (inventory.cactus || 0) + 1;
+    if (Math.random() < 0.07) {
+      inventory.cactusFlower = (inventory.cactusFlower || 0) + 1;
+    }
+
+    saveGame();
+
+    if (playerHP <= 0) {
+      showMessage("💀 Kaktus cię zabił!");
+      resetGame();
+      return false;
+    }
+    return false;
+  }
+  return true;
+});
+trees = trees.filter(i => {
+  if (i.x === playerX && i.y === playerY && inventory.axe) {
+    // dodanie drewna
+    inventory.wood = (inventory.wood || 0) + 1;
+
+    // sprawdzenie osiągnięcia Drwal
+    if (inventory.wood >= 100) {
+      unlockAchievement("woodCollector"); // 🏆 Drwal – Zbierz 100 drewna
+    }
+
+    // szansa na jabłko
+    if (Math.random() < 0.2) {
+      inventory.apples = (inventory.apples || 0) + 1;
+    }
+
+    // zużywanie siekiery
+    inventory.axeDurability--;
+    if (inventory.axeDurability <= 0) {
+      inventory.axe = false;
+      inventory.axeDurability = 0;
+    }
+
+    return false; // usuń drzewo z mapy
+  }
+  return true;
+});
+cows = cows.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    if (inventory.dagger || inventory.sword) {
+      inventory.meat += 2;
+      unlockAchievement("firstBlood");
+      if (inventory.dagger) {
+        inventory.daggerDurability--;
+        if (inventory.daggerDurability <= 0) inventory.dagger = false;
+      }
+      if (inventory.sword) {
+        inventory.swordDurability--;
+        if (inventory.swordDurability <= 0) inventory.sword = false;
+      }
+      return false;
+    } else {
+      let dmg = 1; // obrażenia od krowy
+      if (inventory.armor) {
+        dmg = Math.ceil(dmg * 0.8); // redukcja 20%
+        inventory.armorDurability--;
+        if (inventory.armorDurability <= 0) {
+          inventory.armor = false;
+          alert("🛡️ Twoja zbroja się zniszczyła!");
+        }
+      }
+      playerHP -= dmg;
+
+      if (playerHP <= 0) {
+        alert("💀 Zginąłeś stratowany przez krowę!");
+        resetGame();
+        return false;
+      }
+    }
+  }
+  return true;
+});
+pigs = pigs.filter(i => {
+  if (i.x === playerX && i.y === playerY) {
+    if (inventory.dagger) {
+      inventory.meat++;
+      unlockAchievement("firstBlood");
+      inventory.daggerDurability--;
+      if (inventory.daggerDurability <= 0) inventory.dagger = false;
+      return false;
+    } else {
+      let dmg = 1; // obrażenia od świni
+      if (inventory.armor) {
+        dmg = Math.ceil(dmg * 0.8); // redukcja 20%
+        inventory.armorDurability--;
+        if (inventory.armorDurability <= 0) {
+          inventory.armor = false;
+          alert("🛡️ Twoja zbroja się zniszczyła!");
+        }
+      }
+      playerHP -= dmg;
+
+      saveGame();
+
+      if (playerHP <= 0) {
+        alert("💀 Zginąłeś! Tracisz cały ekwipunek.");
+        inventory = {
+          sticks: 0, stones: 0, wood: 0, meat: 0, apples: 0,
+          tomatoes: 0, sand: 0, cactus: 0, chairs: 0,
+          axe: false, axeDurability: 0,
+          dagger: false, daggerDurability: 0
+        };
+        playerHP = 20;
+        playerX = 0;
+        playerY = 0;
+        worldX = 0;
+        worldY = 0;
+        generateMapForBiome();
+        renderBoard();
+        return false;
+      }
+    }
+  }
+  return true;
+});    
+}
+
+function shootBow(direction) {
+  if (!inventory.bow) {
+    showMessage("❌ Nie masz łuku!");
+    return;
+  }
+  if (inventory.arrows <= 0) {
+    showMessage("❌ Brak strzał!");
+    return;
+  }
+
+  inventory.arrows--;
+
+  let dx = 0, dy = 0;
+  if (direction === "up") dy = -1;
+  if (direction === "down") dy = 1;
+  if (direction === "left") dx = -1;
+  if (direction === "right") dx = 1;
+
+  let x = playerX + dx;
+  let y = playerY + dy;
+
+  while (x >= 0 && x < size && y >= 0 && y < size) {
+    // blokada przez drzewo lub kamień
+    if (trees.some(t => t.x === x && t.y === y) || stones.some(s => s.x === x && s.y === y)) {
+      showMessage("🏹 Strzała uderzyła w przeszkodę!");
+      break;
+    }
+
+    // trafienie w przeciwnika
+    let hit = false;
+
+    wolves = wolves.filter(w => {
+      if (w.x === x && w.y === y) {
+        showMessage("🏹 Trafiłeś wilka!");
+        inventory.wolfSkin = (inventory.wolfSkin || 0) + 1;
+        hit = true;
+        return false;
+      }
+      return true;
+    });
+
+    skeletons = skeletons.filter(s => {
+      if (s.x === x && s.y === y) {
+        showMessage("🏹 Trafiłeś szkieleta!");
+        inventory.bones = (inventory.bones || 0) + 1;
+        hit = true;
+        return false;
+      }
+      return true;
+    });
+
+    spiders = spiders.filter(sp => {
+      if (sp.x === x && sp.y === y) {
+        showMessage("🏹 Trafiłeś pająka!");
+        inventory.spiderSilk = (inventory.spiderSilk || 0) + 1;
+        hit = true;
+        return false;
+      }
+      return true;
+    });
+
+    if (hit) break; // strzała znika po trafieniu
+
+    x += dx;
+    y += dy;
+  }
+
+  updateInventory();
+  renderBoard();
+  saveGame();
+}
+
+function eatApple() {
+  if (inventory.apples > 0 && playerHP < 20) {
+    inventory.apples--;
+    playerHP = Math.min(playerHP + 2, 20);
+    saveGame();
+    renderBoard();
+  } else {
+    showMessage("Nie masz jabłek lub masz pełne zdrowie!");
+  }
+}
+
+function eatTomato() {
+  if ((inventory.tomatoes || 0) > 0 && playerHP < 20) {
+    inventory.tomatoes--;
+    playerHP = Math.min(playerHP + 0.5, 20);
+    saveGame();
+    renderBoard();
+  } else {
+    showMessage("Nie masz pomidorów lub masz pełne zdrowie!");
+  }
+}
+
+function eatCookedMeat() {
+  if (inventory.cookedMeat > 0 && playerHP < 20) {
+    inventory.cookedMeat--;
+    playerHP = Math.min(20, playerHP + 5);
+    renderBoard();
+  }
+}
+
+function eatTomatoSoup() {
+  if ((inventory.tomatoSoup || 0) > 0) {
+    inventory.tomatoSoup--;
+    playerHP = Math.min(playerHP + 2, 20);
+    showMessage("🍲 Zjadłeś zupę pomidorową i odzyskałeś 2 HP!");
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Nie masz zupy pomidorowej!");
+  }
+}
+
+function eatPumpkinSoup() {
+  if ((inventory.pumpkinSoup || 0) > 0) {
+    inventory.pumpkinSoup--;
+    playerHP = Math.min(playerHP + 3, 20); // leczy +3 HP
+    showMessage("🎃🍲 Zjadłeś zupę dyniową i odzyskałeś 3 HP!");
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Nie masz zupy dyniowej!");
+  }
+}
+
+function eatCarrot() {
+  if ((inventory.carrots || 0) > 0 && playerHP < 20) {
+    inventory.carrots--;
+    playerHP = Math.min(20, playerHP + 1);
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Nie masz marchewek lub masz pełne zdrowie!");
+  }
+}
+
+function updateInventory() {
+  if (!inventory) inventory = {};
+
+  let inv = `
+    <h3>🎒 Ekwipunek:</h3>
+    <ul style="text-align: left; line-height: 1.6;">
+      <li>Bambus: ${inventory.bamboo || 0}</li>
+      <li>Drewno: ${inventory.wood || 0}</li>
+      <li>Dynie: ${inventory.pumpkins || 0}</li>
+      <li>Gotowe mięso: ${inventory.cookedMeat || 0}</li>
+      <li>Jabłka: ${inventory.apples || 0}</li>
+      <li>Kaktusy: ${inventory.cactus || 0}</li>
+      <li>Kamienie: ${inventory.stones || 0}</li>
+      <li>Kości: ${inventory.bones || 0}</li>
+      <li>Krzesło: ${inventory.chairs || 0}</li>
+      <li>Kwiaty kaktusa: ${inventory.cactusFlower || 0}</li>
+      <li>Marchewki: ${inventory.carrots || 0}</li>
+      <li>Mięso: ${inventory.meat || 0}</li>
+      <li>Miska: ${inventory.bowl || 0}</li>
+      <li>Nić: ${inventory.thread || 0}</li>
+      <li>Ogniska: ${inventory.campfires || 0}</li>
+      <li>Pajęczyna: ${inventory.spiderSilk || 0}</li>
+      <li>Patyki: ${inventory.sticks || 0}</li>
+      <li>Piasek: ${inventory.sand || 0}</li>
+      <li>Pomidory: ${inventory.tomatoes || 0}</li>
+      <li>Pył kamienny: ${inventory.stoneDust || 0}</li>
+      <li>Skóra wilka: ${inventory.wolfSkin || 0}</li>
+      <li>Strzały ${inventory.arrows || 0}</li>
+      <li>Wełna: ${inventory.wool || 0}</li>
+      <li>Węgiel: ${inventory.coal || 0}</li>
+      <li>Zupa dyniowa: ${inventory.pumpkinSoup || 0}</li>
+      <li>Zupa pomidorowa: ${inventory.tomatoSoup || 0}</li>
+    </ul>
+
+    <p>❤️ Zdrowie: ${playerHP.toFixed(1)}/20</p>
+    <div class="durability-bar">
+      <div class="durability" style="width:${playerHP * 5}%; background:#f44336;"></div>
+    </div>
+  `;
+
+  const items = [
+    { name: 'axe', label: '🪓 Siekiera', maxDur: 15 },
+    { name: 'swissKnife', label: '🇨🇭 Scyzoryk szwajcarski', maxDur: 20 },
+    { name: 'sword', label: '🗡️ Miecz', maxDur: 10 },
+    { name: 'bow', label: '🏹 Łuk', maxDur: 15 },
+    { name: 'pickaxe', label: '⛏️ Kilof', maxDur: 12 },
+    { name: 'stonePickaxe', label: '⛏️ Kamienny Kilof', maxDur: 20 },
+    { name: 'dagger', label: '🔪 Sztylet', maxDur: 7 }
+  ];
+
+  items.forEach(item => {
+    if (inventory[item.name]) {
+      const dur = inventory[`${item.name}Durability`] || 0;
+      inv += `
+        <p>${item.label} (Wytrzymałość: ${dur}/${item.maxDur})</p>
+        <div class="durability-bar">
+          <div class="durability" style="width:${(dur / item.maxDur) * 100}%;"></div>
+        </div>
+      `;
+    }
+  });
+
+  if (inventory.armor) {
+    inv += `<p>🛡️ Zbroja – redukcja obrażeń 20%</p>`;
+  }
+  
+if (inventory.epet) {
+  inv += `<p>🤖 Epet: Aktywny <button onclick="useEpet()">Użyj</button></p>`;
+} else {
+  inv += `<p>🤖 Epet: Brak</p>`;
+}
+
+
+  document.getElementById('inventory').innerHTML = inv;
+}
+
+function craftAxe() {
+  if (inventory.sticks >= 3 && inventory.stones >= 2) {
+    inventory.sticks -= 3;
+    inventory.stones -= 2;
+    inventory.axe = true;
+    inventory.axeDurability = 15;
+    renderBoard();
+  }
+}
+
+function craftArrow() {
+  if ((inventory.sticks || 0) >= 1 && (inventory.stones || 0) >= 1) {
+    inventory.sticks--;
+    inventory.stones--;
+    inventory.arrows = (inventory.arrows || 0) + 5; // 1 patyk + 1 kamień = 5 strzał
+    showMessage("🏹 Stworzyłeś 5 strzał!");
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Potrzebujesz: 1x patyk i 1x kamień!");
+  }
+}
+
+function craftStonePickaxe() {
+  if ((inventory.stones || 0) >= 3 && (inventory.sticks || 0) >= 4) {
+    inventory.stones -= 3;
+    inventory.sticks -= 4;
+
+    inventory.stonePickaxe = true;
+    inventory.stonePickaxeDurability = 20; 
+
+    showMessage("⛏️ Stworzyłeś kamienny kilof!");
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Potrzebujesz 3x kamień i 4x patyk!");
+  }
+}
+
+function craftEpet() {
+  if ((inventory.coal || 0) >= 10 && (inventory.stoneDust || 0) >= 5) {
+    inventory.coal -= 10;
+    inventory.stoneDust -= 5;
+    inventory.bamboo -= 1;
+    inventory.epet = true;
+    showMessage("🤖 Stworzyłeś Epeta! Zbiera wszystko wokół ciebie!");
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Potrzebujesz 10 węgla i 5 kamiennego pyłu, aby stworzyć Epeta!");
+  }
+}
+
+function craftArmor() {
+  if ((inventory.wolfSkin || 0) >= 12) {
+    inventory.wolfSkin -= 12;
+    inventory.armor = true;
+    inventory.armorDurability = 30; 
+    showMessage("🛡️ Udało Ci się stworzyć zbroję! Otrzymujesz 20% odporności na obrażenia.");
+    unlockAchievement("armorCrafter");
+    updateInventory();
+  } else {
+    showMessage("❌ Potrzebujesz 12x skóry wilka.");
+  }
+}
+
+
+function craftBowl() {
+  if (inventory.wood  >= 1) {
+    inventory.wood -= 1;
+    inventory.bowl = (inventory.bowl || 0) + 1;
+    updateInventory();
+    saveGame();
+    showMessage("Udało się stworzyć miskę!");
+  } else {
+    showMessage("❌ Potrzebujesz 1 drewno.");
+  }
+}
+
+function craftBow() {
+  if ((inventory.thread || 0) >= 1 && (inventory.sticks || 0) >= 2) {
+    inventory.thread -= 1;
+    inventory.sticks -= 2;
+    inventory.bow = true;
+    inventory.bowDurability = 15; 
+    inventory.bow = (inventory.bow || 0) + 1;
+    updateInventory();
+    saveGame();
+    showMessage("Udało się stworzyć łuk!");
+  } else {
+    showMessage("❌ Potrzebujesz 2x patyki i 1 nić.");
+  }
+}
+
+function craftChair() {
+  if ((inventory.wood || 0) >= 2 && (inventory.sticks || 0) >= 6) {
+    inventory.wood -= 2;
+    inventory.sticks -= 6;
+    inventory.chairs = (inventory.chairs || 0) + 1;
+    updateInventory();
+    saveGame();
+    showMessage("🪑 Udało się stworzyć krzesło!");
+  } else {
+    showMessage("❌ Potrzebujesz 2x drewno i 6x patyków.");
+  }
+}
+
+function craftPickaxe() {
+  if (inventory.sticks >= 7) {
+    inventory.sticks -= 7;
+    inventory.pickaxe = true;
+    inventory.pickaxeDurability = 12; // np. 12 użyć
+    renderBoard();
+  } else {
+    showMessage("❌ Potrzebujesz 7x patyk .");
+  }
+}
+
+function craftThread() {
+  if ((inventory.spiderSilk || 0) >= 3) {
+    inventory.spiderSilk -= 3;
+    inventory.thread = (inventory.thread || 0) + 1;
+    alert("🧵 Stworzyłeś 1x nić z 3 pajęczyn!");
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Potrzebujesz co najmniej 3 pajęczyn, aby zrobić nić!");
+  }
+}
+
+function craftSwissKnife() {
+  if (inventory.sticks >= 5 && inventory.stones >= 8) {
+    inventory.sticks -= 5;
+    inventory.stones -= 8;
+    inventory.swissKnife = true;
+    inventory.swissKnifeDurability = 20; // 20 użyć
+    renderBoard();
+    updateInventory();
+    showMessage("🔪 Stworzyłeś Scyzoryk szwajcarski!");
+  } else {
+    showMessage("❌ Potrzebujesz 5 patyków i 8 kamieni!");
+  }
+}
+
+function craftCampfire() {
+  if (inventory.wood >= 8 && inventory.coal >= 4) {
+    inventory.wood -= 8;
+    inventory.coal -= 4;
+    inventory.campfires = (inventory.campfires || 0) + 1;
+    renderBoard();
+  }
+}
+
+function placeCampfire() {
+  if (inventory.campfires > 0) {
+    campfires.push({ x: playerX, y: playerY });
+    inventory.campfires--;
+    renderBoard();
+  } else {
+    showMessage("Nie masz ogniska do postawienia!");
+  }
+}
+
+function craftDagger() {
+  if (inventory.sticks >= 2 && inventory.stones >= 7) {
+    inventory.sticks -= 2;
+    inventory.stones -= 7;
+    inventory.dagger = true;
+    inventory.daggerDurability = 7;
+    renderBoard();
+  }
+}
+
+function craftSword() {
+  if (inventory.sticks >= 3 && inventory.stones >= 10) {
+    inventory.sticks -= 3;
+    inventory.stones -= 10;
+    inventory.sword = true;
+    inventory.swordDurability = 10;
+    renderBoard();
+  }
+}
+
+function getWorldKey() {
+  return `${worldX},${worldY}`;
+}
+
+function getCurrentWorld() {
+  const key = getWorldKey();
+  if (!worlds[key]) {
+    worlds[key] = {
+      sticks: [], stones: [], trees: [], pigs: [], tomatoes: []
+    };
+    generateItems(worlds[key].sticks, 10);
+    generateItems(worlds[key].stones, 10);
+    generateItems(worlds[key].trees, 5);
+    generateItems(worlds[key].pigs, 4);
+    generateItems(worlds[key].tomatoes, 2);
+  }
+  return worlds[key];
+}
+
+function updateTimeLabel() {
+  const label = document.getElementById('timeLabel');
+  label.textContent = isDay ? '🌞 Dzień' : '🌙 Noc';
+  document.body.style.backgroundColor = isDay ? '#1e1e1e' : '#000';
+  if (currentBiome === 'cave') {
+    document.body.style.backgroundColor = '#222'; // ciemniejsze tło
+  }
+}
+
+function updateDayCounter() {
+  document.getElementById('dayCounter').textContent = `📅 Dzień: ${day}`;
+}
+
+function toggleDayNight() {
+  isDay = !isDay;
+  day++;
+  
+  // Noc: pojawiają się szkielety
+  if (!isDay) {
+    generateItems(skeletons, 3);
+    if (currentBiome === 'forest') {
+      generateItems(wolves, 2); // pojawiają się tylko w lesie
+    }
+  } else {
+    skeletons = [];
+    wolves = [];
+  }
+
+  // Dzień: odświeżenie surowców
+  if (isDay) {
+    sticks = [];
+    stones = [];
+    trees = [];
+    pigs = [];
+
+    generateItems(sticks, 10);
+    generateItems(stones, 10);
+    generateItems(trees, 5);
+    generateItems(carrots, 5);
+    generateItems(pigs, 4);
+  }
+
+  // Kupiec co 2 dni
+  if (day % 2 === 0) {
+    spawnMerchant();
+  } else {
+    merchant = null;
+  }
+  
+  if (day >= 5) {
+    unlockAchievement("daySurvivor");
+  }
+
+  updateWeather();
+  applyWeatherEffects();
+  updateTimeLabel();
+  updateDayCounter();
+  renderBoard();
+  saveGame();
+}
+
+function openCooking() {
+  document.getElementById("cookingOverlay").classList.add("visible");
+}
+
+function closeCooking() {
+  document.getElementById("cookingOverlay").classList.remove("visible");
+}
+
+function cookMeat() {
+  if ((inventory.meat || 0) > 0) {
+    const cooked = inventory.meat;
+    inventory.meat = 0;
+    inventory.cookedMeat = (inventory.cookedMeat || 0) + cooked;
+    showMessage(`🍖 Ugotowałeś ${cooked}x mięso!`);
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Nie masz mięsa do ugotowania!");
+  }
+}
+
+function cookTomatoSoup() {
+  if ((inventory.tomatoes || 0) >= 2 && (inventory.bowl || 0) >= 1) {
+    inventory.tomatoes -= 4;
+    inventory.bowl--;
+    inventory.tomatoSoup = (inventory.tomatoSoup || 0) + 1;
+    showMessage("🍲 Ugotowałeś zupę pomidorową!");
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Potrzebujesz 4 pomidorów i miskę do ugotowania zupy!");
+  }
+}
+
+function cookPumpkinSoup() {
+  if ((inventory.pumpkins || 0) >= 2 && (inventory.bowl || 0) >= 1) {
+    inventory.pumpkins -= 2;
+    inventory.bowl--; 
+    inventory.pumpkinSoup = (inventory.pumpkinSoup || 0) + 1;
+    showMessage("🍲 Ugotowałeś zupę dyniową!");
+    updateInventory();
+    saveGame();
+  } else {
+    showMessage("❌ Potrzebujesz 2 dyni i 1 miski, aby ugotować zupę dyniową!");
+  }
+}
+
+function openMerchantTrade() {
+  const possibleTrades = [
+    { from: 'sticks', fromAmt: 5, to: 'apples', toAmt: 1, text: "5x Patyk → 1x Jabłko" },
+    { from: 'stones', fromAmt: 3, to: 'meat', toAmt: 1, text: "3x Kamień → 1x Mięso" },
+    { from: 'bones', fromAmt: 2, to: 'wood', toAmt: 3, text: "2x Kość → 3x Drewno" },
+    { from: 'chairs', fromAmt: 2, to: 'tomatoSoup', toAmt: 1, text: "2x Krzesło → 1x Zupa Pomidorowa" },
+    { from: 'cactusFlower', fromAmt: 1, to: 'dagger', toAmt: 1, text: "1x Kwiat kaktusa → 1x Sztylet" },
+    { from: 'stones', fromAmt: 10, to: 'sword', toAmt: 1, text: "10x Kamień → 1x Miecz" }
+  ];
+
+  const offers = [];
+  while (offers.length < 3) {
+    const offer = possibleTrades[Math.floor(Math.random() * possibleTrades.length)];
+    if (!offers.includes(offer)) offers.push(offer);
+  }
+
+  let html = `<h3>👳 Kupiec</h3><p>Witaj, oto moje oferty:</p>`;
+  offers.forEach(o => {
+    html += `<button onclick="trade('${o.from}', ${o.fromAmt}, '${o.to}', ${o.toAmt})">${o.text}</button><br>`;
+  });
+  html += `<button onclick="closeMerchant()">Zamknij</button>`;
+
+  document.getElementById('merchantUI').innerHTML = html;
+  document.getElementById('merchantOverlay').classList.add('visible');
+}
+
+function trade(from, fromAmt, to, toAmt) {
+  if ((inventory[from] || 0) >= fromAmt) {
+    inventory[from] -= fromAmt;
+    inventory[to] = (inventory[to] || 0) + toAmt;
+    updateInventory();
+  } else {
+    showMessage("❌ Za mało zasobów do wymiany.");
+  }
+}
+
+function saveGame() {
+  localStorage.setItem('survivalGame', JSON.stringify({
+    playerX, playerY, inventory, sticks, stones, trees, cows, coal, pigs, tomatoes, sand, campfires, isDay, playerHP, day, weather, achievements, sheep, bamboo, spider
+  }));
+}
+
+function closeMerchant() {
+  document.getElementById('merchantOverlay').classList.remove('visible');
+  document.getElementById('merchantUI').innerHTML = '';
+}
+
+function loadGame() {
+  try {
+    const data = JSON.parse(localStorage.getItem('survivalGame'));
+    if (data) {
+      playerX = data.playerX;
+      playerY = data.playerY;
+      inventory = data.inventory;
+      sticks = data.sticks;
+      stones = data.stones;
+      spiderSilk = data.spiderSilk;
+      trees = data.trees;
+      bamboo = data.trees;
+      pigs = data.pigs;
+      spider = data.spider;
+      campfires = data.campfires || [];
+      tomatoes = data.tomatoes || [];
+      isDay = data.isDay;
+      weather = data.weather || "☀️ Słonecznie";
+      sand = data.sand || [];
+      coal = data.coal || [];
+      sheep = data.sheep || [];
+      cows = data.cows || [];
+      bamboo = data.bamboo || [];
+      cacti = data.cacti || [];
+      achievements = data.achievements || achievements;
+      playerHP = data.playerHP !== undefined ? data.playerHP : 20;
+      day = data.day !== undefined ? data.day : 1;
+    } else {
+      generateMapForBiome();
+    }
+  } catch (e) {
+    console.warn("Błąd podczas ładowania zapisu:", e);
+    generateMapForBiome();
+  }
+
+  updateWeather();
+  renderBoard();
+  generateMapForBiome();
+  updateDayCounter();
+}
+
+function resetGame() {
+  inventory = {
+    sticks: 0, stones: 0, wood: 0, meat: 0, apples: 0, tomatoes: 0, sand: 0, coal: 0, cactus: 0, campfires: 0, bones: 0, cactusFlower: 0, chairs: 0, carrots: 0, sword: false, swordDurability: 0, wool: 0, arrows: 0, tomatoSoup: 0, stonePickaxe: false, pumpkinSoup: 0, stonePickaxeDurability: 0, pumpkins: 0,axe: false, axeDurability: 0, sheep: 0, cookedMeat: 0, spiderSilk: 0, spider: 0, dagger: false, daggerDurability: 0
+  };
+
+  playerHP = 20;
+  playerX = 0;
+  playerY = 0;
+  worldX = 0;
+  worldY = 0;
+  isDay = true;
+  day = 1;
+  
+  achievements.forEach(a => a.unlocked = false);
+
+  sticks = [];
+  stones = [];
+  trees = [];
+  pigs = [];
+  tomatoes = [];
+  sand = [];  
+  arrows = [];  
+  cacti = [];
+  campfires = [];
+  carrots = [];
+  coal = [];
+  wolves = [];
+  sheep = [];
+  bamboo = [];
+  skeletons = [];
+  spider = [];
+  merchant = null;
+  worlds = {};
+
+  localStorage.removeItem('survivalGame');
+  updateWeather();
+  generateMapForBiome();
+  renderBoard();
+  updateInventory();
+  updateTimeLabel();
+  updateDayCounter();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'w' || e.key === 'W') move('up');
+  if (e.key === 's' || e.key === 'S') move('down');
+  if (e.key === 'a' || e.key === 'A') move('left');
+  if (e.key === 'd' || e.key === 'D') move('right');
+});
+
+setInterval(toggleDayNight, 30000);
+loadGame();
+</script>
+
+</body>
+</html>
